@@ -55,7 +55,12 @@ pipeline {
 
         stage('Deployment') {
             steps {
-                // Add the deployment steps for your project
+                // Build the Docker images
+                sh 'docker build -t $SERVER_IMAGE server'
+                sh 'docker build -t $FRONTEND_IMAGE frontend'
+                // Run the Docker containers
+                sh "docker run -d -p $SERVER_PORT:3000 --name red_proj_server $SERVER_IMAGE"
+                sh "docker run -d -p $FRONTEND_PORT:3000 --name red_proj_frontend $FRONTEND_IMAGE"
             }
         }
 
