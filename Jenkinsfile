@@ -1,20 +1,50 @@
 pipeline {
-    agent any
+    // Define environment variables
+    environment {
+        // Image names for the server and frontend
+        SERVER_IMAGE = 'red_proj_server:v1'
+        FRONTEND_IMAGE = 'red_proj_frontend:v1'
+        // Ports for the server and frontend
+        SERVER_PORT = '3000'
+        FRONTEND_PORT = '3001'
+    }
 
+    // run on any available Jenkins agent
+    agent any
     stages {
-        stage('Build') {
+        stage('Checkout') {
             steps {
-                // Pull the Docker images
-                sh 'docker pull red_proj_server'
-                sh 'docker pull red_proj_frontend'
+                // Clone the repository
+                checkout(
+                    [$class: 'GitSCM', 
+                    branches: [[name: 'main']], 
+                    userRemoteConfigs: [[url: '<repository-url>']]]
+                    )
             }
         }
+
+        // Add the rest of your pipeline stages here
+        stage('Build') {
+            steps {
+                // Add the build steps for your project
+            }
+        }
+
         stage('Test') {
             steps {
-                // Run the Docker containers and run the tests
-                sh 'docker run -d -p 3000:3000 red_proj_server'
-                sh 'docker run -d -p 3001:3000 red_proj_frontend'
-                sh 'cd react-express-starter/test && pytest test.py'
+                // Add the test steps for your project
+            }
+        }
+
+        stage('Deployment') {
+            steps {
+                // Add the deployment steps for your project
+            }
+        }
+
+        stage('Delivery') {
+            steps {
+                // Add the delivery steps for your project
             }
         }
     }
