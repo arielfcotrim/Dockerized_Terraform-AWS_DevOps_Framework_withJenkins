@@ -18,7 +18,7 @@ pipeline {
                 checkout(
                     [$class: 'GitSCM', 
                     branches: [[name: 'main']], 
-                    userRemoteConfigs: [[url: '<repository-url>']]]
+                    userRemoteConfigs: [[url: 'https://github.com/arielfcotrim/red-project.git']]]
                     )
             }
         }
