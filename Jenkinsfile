@@ -23,12 +23,23 @@ pipeline {
             }
         }
 
-        // Add the rest of your pipeline stages here
         stage('Build') {
             steps {
-                // Add the build steps for your project
-            }
-        }
+                // Build steps for the server
+                dir('server') {
+                    sh 'npm install'
+                    // Uncomment the line below if you need to start the server
+                    // sh 'npm start'
+                }
+
+                // Build steps for the frontend
+                dir('frontend') {
+                    sh 'npm install'
+                    // Uncomment the line below if you need to start the frontend
+                    // sh 'npm start'
+                }
+    }
+}
 
         stage('Test') {
             steps {
