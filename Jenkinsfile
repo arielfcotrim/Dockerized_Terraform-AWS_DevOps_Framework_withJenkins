@@ -38,12 +38,18 @@ pipeline {
                     // Uncomment the line below if you need to start the frontend
                     // sh 'npm start'
                 }
-    }
-}
+            }
+        }
 
         stage('Test') {
             steps {
-                // Add the test steps for your project
+                // Go into the tests directory
+                dir('tests') {
+                    // Install requirements
+                    sh 'pip install -r requirements.txt'
+                    // Run the test.py file
+                    sh 'pytest -m test.py'
+                }
             }
         }
 
