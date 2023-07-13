@@ -20,23 +20,21 @@ pipeline {
                     branches: [[name: 'main']], 
                     userRemoteConfigs: [[url: 'https://github.com/arielfcotrim/red-project.git']]]
                     )
+                }
             }
-        }
 
         stage('Build') {
             steps {
                 // Build steps for the server
                 dir('server') {
                     sh 'npm install'
-                    // Uncomment the line below if you need to start the server
-                    // sh 'npm start'
+                    sh 'npm start'
                 }
 
                 // Build steps for the frontend
                 dir('frontend') {
                     sh 'npm install'
-                    // Uncomment the line below if you need to start the frontend
-                    // sh 'npm start'
+                    sh 'npm start'
                 }
             }
         }
