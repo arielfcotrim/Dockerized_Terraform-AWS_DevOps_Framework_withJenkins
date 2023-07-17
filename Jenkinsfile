@@ -4,9 +4,12 @@ pipeline {
         // Image names for the server and frontend
         SERVER_IMAGE = 'red_proj_server:v1'
         FRONTEND_IMAGE = 'red_proj_frontend:v1'
-        // Ports for the server and frontend
-        SERVER_PORT = '3000'
-        FRONTEND_PORT = '3001'
+        // Docker Hub login credentials
+        DOCKER_USER = credentials('docker_username')
+        DOCKER_PASSWORD = credentials('docker_password')
+        // AWS credentials for Terraform
+        AWS_ACCESS_KEY_ID = credentials('aws_access_key_id')
+        AWS_SECRET_ACCESS_KEY = credentials('aws_secret_access_key')
     }
 
     // run on any available Jenkins agent
@@ -16,8 +19,8 @@ pipeline {
             steps {
                 // Clone the repository
                 checkout(
-                    [$class: 'GitSCM', 
-                    branches: [[name: 'main']], 
+                    [$class: 'GitSCM',
+                    branches: [[name: 'main']],
                     userRemoteConfigs: [[url: 'https://github.com/arielfcotrim/red-project.git']]]
                     )
                 }
@@ -28,13 +31,11 @@ pipeline {
                 // Build steps for the server
                 dir('server') {
                     sh 'npm install'
-                    sh 'npm start'
                 }
 
                 // Build steps for the frontend
                 dir('frontend') {
                     sh 'npm install'
-                    sh 'npm start'
                 }
             }
         }
@@ -53,18 +54,31 @@ pipeline {
 
         stage('Deployment') {
             steps {
-                // Build the Docker images
-                sh 'docker build -t $SERVER_IMAGE server'
-                sh 'docker build -t $FRONTEND_IMAGE frontend'
-                // Run the Docker containers
-                sh "docker run -d -p $SERVER_PORT:3000 --name red_proj_server $SERVER_IMAGE"
-                sh "docker run -d -p $FRONTEND_PORT:3000 --name red_proj_frontend $FRONTEND_IMAGE"
+                // Build the Docker images with the Docker Hub username and repository included in the image name
+                sh "docker build -t $DOCKER_USER/$SERVER_IMAGE server"
+                sh "docker build -t $DOCKER_USER/$FRONTEND_IMAGE frontend"
+                // Log in to Docker Hub
+                sh "docker login -u $DOCKER_USER -p $DOCKER_PASSWORD"
+                // Push the images to Docker Hub
+                sh "docker push $DOCKER_USER/$SERVER_IMAGE"
+                sh "docker push $DOCKER_USER/$FRONTEND_IMAGE"
             }
         }
 
         stage('Delivery') {
             steps {
-                // Add the delivery steps for your project
+                // Change to the directory containing the Terraform script
+                dir('terraform') {
+                    // Initialize Terraform
+                    sh 'terraform init'
+                    // Set the Terraform environment variables using the 'withEnv' block
+                    withEnv([
+                        "DOCKER_USERNAME=$DOCKER_USER",
+                        "SERVER_IMAGE=$SERVER_IMAGE",
+                        "FRONTEND_IMAGE=$FRONTEND_IMAGE"
+                    // Apply the Terraform script automatically
+                    sh 'terraform apply -auto-approve'
+                }
             }
         }
     }
