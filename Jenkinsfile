@@ -47,7 +47,7 @@ pipeline {
         stage('Test') {
             steps {
                 // Go into the tests directory
-                dir('tests') {
+                dir('test') {
                     // Install requirements
                     sh 'pip install -r requirements.txt'
                     // Run the test.py file
