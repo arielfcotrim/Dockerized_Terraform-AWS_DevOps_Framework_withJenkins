@@ -25,7 +25,7 @@ pipeline {
                     branches: [[name: 'main']],
                     userRemoteConfigs: [[
                         url: 'https://github.com/arielfcotrim/red-project.git'
-                        credentialsId: "$GITHUB_PAT"
+                        credentialsId: "github_pat"
                         ]]
                     ])
                 }
