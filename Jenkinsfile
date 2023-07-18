@@ -17,18 +17,18 @@ pipeline {
     // run on any available Jenkins agent
     agent any
     stages {
-        stage('Checkout') {
-            steps {
-                // Clone the repository
-                checkout([
-                    $class: 'GitSCM',
-                    branches: [[name: 'main']],
-                    userRemoteConfigs: [[
-                        url: 'https://arielfcotrim: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@github.com/arielfcotrim/red-project.git'
-                        ]]
-                    ])
-                }
-            }
+        // stage('Checkout') {
+        //     steps {
+        //         // Clone the repository
+        //         checkout([
+        //             $class: 'GitSCM',
+        //             branches: [[name: 'main']],
+        //             userRemoteConfigs: [[
+        //                 url: 'https://arielfcotrim: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@github.com/arielfcotrim/red-project.git'
+        //                 ]]
+        //             ])
+        //         }
+        //     }
 
         stage('Build') {
             steps {
