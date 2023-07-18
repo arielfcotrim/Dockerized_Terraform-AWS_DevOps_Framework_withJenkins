@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "us-east-1"  # Change this to your preferred AWS region
+  region = "UTC"
 }
 
 resource "aws_vpc" "main" {
@@ -43,8 +43,8 @@ resource "aws_instance" "server" {
               yum install -y docker
               service docker start
               usermod -a -G docker ec2-user
-              docker pull $DOCKER_USERNAME/$SERVER_IMAGE
-              docker run -d -p 3000:3000 $DOCKER_USERNAME/$SERVER_IMAGE
+              docker pull arielforner/$SERVER_IMAGE
+              docker run -d -p 3000:3000 arielforner/$SERVER_IMAGE
               EOF
 
   tags = {
@@ -64,8 +64,8 @@ resource "aws_instance" "frontend" {
               yum install -y docker
               service docker start
               usermod -a -G docker ec2-user
-              docker pull $DOCKER_USERNAME/$FRONTEND_IMAGE
-              docker run -d -p 3000:3000 $DOCKER_USERNAME/$FRONTEND_IMAGE
+              docker pull arielforner/$FRONTEND_IMAGE
+              docker run -d -p 3000:3000 arielforner/$FRONTEND_IMAGE
               EOF
 
   tags = {

@@ -75,15 +75,17 @@ pipeline {
                 dir('terraform') {
                     // Initialize Terraform
                     sh 'terraform init'
+                    // Apply the Terraform script automatically
+                    sh 'terraform apply -auto-approve'
                     // Set the Terraform environment variables using the 'withEnv' block
-                    withEnv([
-                        "DOCKER_USERNAME=$DOCKER_USER",
-                        "SERVER_IMAGE=$SERVER_IMAGE",
-                        "FRONTEND_IMAGE=$FRONTEND_IMAGE"
-                    ]) {
-                        // Apply the Terraform script automatically
-                        sh 'terraform apply -auto-approve'
-                    }
+                    // withEnv([
+                    //     "DOCKER_USERNAME=$DOCKER_USER",
+                    //     "SERVER_IMAGE=$SERVER_IMAGE",
+                    //     "FRONTEND_IMAGE=$FRONTEND_IMAGE"
+                    // ]) {
+                    //     // Apply the Terraform script automatically
+                    //     sh 'terraform apply -auto-approve'
+                    // }
                 }
             }
         }
