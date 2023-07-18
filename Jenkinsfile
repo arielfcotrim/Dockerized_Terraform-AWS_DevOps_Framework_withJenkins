@@ -4,6 +4,8 @@ pipeline {
         // Image names for the server and frontend
         SERVER_IMAGE = 'red_proj_server:v1'
         FRONTEND_IMAGE = 'red_proj_frontend:v1'
+        // GitHub Personal Access Token (PAT)
+        GITHUB_PAT = credentials('github_pat')
         // Docker Hub login credentials
         DOCKER_USER = credentials('docker_username')
         DOCKER_PASSWORD = credentials('docker_password')
@@ -18,11 +20,14 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Clone the repository
-                checkout(
-                    [$class: 'GitSCM',
+                checkout([
+                    $class: 'GitSCM',
                     branches: [[name: 'main']],
-                    userRemoteConfigs: [[url: 'https://github.com/arielfcotrim/red-project.git']]]
-                    )
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/arielfcotrim/red-project.git'
+                        credentialsId: "$GITHUB_PAT"
+                        ]]
+                    ])
                 }
             }
 
