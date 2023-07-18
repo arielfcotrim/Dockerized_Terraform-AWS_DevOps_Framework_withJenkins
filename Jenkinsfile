@@ -24,8 +24,7 @@ pipeline {
                     $class: 'GitSCM',
                     branches: [[name: 'main']],
                     userRemoteConfigs: [[
-                        url: 'https://github.com/arielfcotrim/red-project.git'
-                        credentialsId: "github_pat"
+                        url: 'https://arielfcotrim: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@github.com/arielfcotrim/red-project.git'
                         ]]
                     ])
                 }
