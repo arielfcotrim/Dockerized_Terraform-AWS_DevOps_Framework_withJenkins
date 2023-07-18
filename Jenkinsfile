@@ -51,7 +51,7 @@ pipeline {
                     // Install requirements
                     sh 'pip install -r requirements.txt'
                     // Run the test.py file
-                    sh 'python pytest test.py'
+                    sh 'python3 pytest test.py'
                 }
             }
         }
