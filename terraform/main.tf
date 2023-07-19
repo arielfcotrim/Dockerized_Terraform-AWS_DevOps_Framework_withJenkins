@@ -9,7 +9,7 @@ terraform {
 
 # Configure the AWS Provider
 provider "aws" {
-  region = "eu-north-1"
+  region = "eu-north-1c"
 }
 
 # Create a VPC
@@ -45,7 +45,7 @@ resource "aws_security_group" "allow_all" {
 resource "aws_instance" "server" {
   ami           = "ami-0c55b159cbfafe1f0"  # Amazon Linux 2 AMI (HVM), SSD Volume Type
   instance_type = "t2.micro"
-  subnet_id     = aws_subnet.main.id
+  subnet_id     = subnet-0953d8154276fb781
   vpc_security_group_ids = [aws_security_group.allow_all.id]
 
   user_data = <<-EOF
@@ -66,7 +66,7 @@ resource "aws_instance" "server" {
 resource "aws_instance" "frontend" {
   ami           = "ami-0c55b159cbfafe1f0"  # Amazon Linux 2 AMI (HVM), SSD Volume Type
   instance_type = "t2.micro"
-  subnet_id     = aws_subnet.main.id
+  subnet_id     = subnet-0953d8154276fb781
   vpc_security_group_ids = [aws_security_group.allow_all.id]
 
   user_data = <<-EOF
