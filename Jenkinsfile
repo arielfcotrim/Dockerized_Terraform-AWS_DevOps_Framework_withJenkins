@@ -76,20 +76,22 @@ pipeline {
                     // Initialize Terraform
                     sh 'terraform init'
                     // Export the Terraform environment variables
-                    sh "export DOCKER_USER=$DOCKER_USER"
-                    sh "export SERVER_IMAGE=$SERVER_IMAGE"
-                    sh "export FRONTEND_IMAGE=$FRONTEND_IMAGE"
-                    // Apply the Terraform script automatically
-                    sh 'terraform apply -auto-approve'
+                    // sh "export DOCKER_USERNAME=$DOCKER_USER"
+                    // sh "export SERVER_IMAGE=$SERVER_IMAGE"
+                    // sh "export FRONTEND_IMAGE=$FRONTEND_IMAGE"
+                    // // Apply the Terraform script automatically
+                    // sh 'terraform apply -auto-approve'
                     // Set the Terraform environment variables using the 'withEnv' block
-                    // withEnv([
-                    //     "DOCKER_USER=$DOCKER_USER",
-                    //     "SERVER_IMAGE=$SERVER_IMAGE",
-                    //     "FRONTEND_IMAGE=$FRONTEND_IMAGE"
-                    // ]) {
-                    //     // Apply the Terraform script automatically
-                    //     sh 'terraform apply -auto-approve'
-                    // }
+                    withEnv([
+                        "AWS_ACCESS_KEY_ID=${env.AWS_ACCESS_KEY_ID}",
+                        "AWS_SECRET_ACCESS_KEY=${env.AWS_SECRET_ACCESS_KEY}",
+                        "DOCKER_USERNAME=${env.DOCKER_USER}",
+                        "SERVER_IMAGE=${env.SERVER_IMAGE}",
+                        "FRONTEND_IMAGE=${env.FRONTEND_IMAGE}"
+                        ]) {
+                        // Apply the Terraform script automatically
+                        sh 'terraform apply -auto-approve'
+                    }
                 }
             }
         }
