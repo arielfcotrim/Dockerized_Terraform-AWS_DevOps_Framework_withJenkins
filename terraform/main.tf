@@ -9,7 +9,7 @@ terraform {
 
 # Configure the AWS Provider
 provider "aws" {
-  region = "UTC"
+  region = "eu-north-1"
 }
 
 # Create a VPC
