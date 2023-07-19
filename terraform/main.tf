@@ -43,8 +43,8 @@ resource "aws_instance" "server" {
               yum install -y docker
               service docker start
               usermod -a -G docker ec2-user
-              docker pull arielforner/$SERVER_IMAGE
-              docker run -d -p 3000:3000 arielforner/$SERVER_IMAGE
+              docker pull $DOCKER_USER/$SERVER_IMAGE
+              docker run -d -p 3000:3000 $DOCKER_USER/$SERVER_IMAGE
               EOF
 
   tags = {
@@ -64,8 +64,8 @@ resource "aws_instance" "frontend" {
               yum install -y docker
               service docker start
               usermod -a -G docker ec2-user
-              docker pull arielforner/$FRONTEND_IMAGE
-              docker run -d -p 3000:3000 arielforner/$FRONTEND_IMAGE
+              docker pull $DOCKER_USER/$FRONTEND_IMAGE
+              docker run -d -p 3000:3000 $DOCKER_USER/$FRONTEND_IMAGE
               EOF
 
   tags = {
