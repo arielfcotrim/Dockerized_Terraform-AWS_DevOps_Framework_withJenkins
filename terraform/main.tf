@@ -46,7 +46,7 @@ resource "aws_instance" "server" {
   ami           = "ami-080995eccd0180687"
   instance_type = "t2.micro"
   subnet_id     = subnet-0953d8154276fb781
-  vpc_security_group_ids = [aws_security_group.allow_all.id]
+  vpc_security_group_ids = [aws_security_group.allow_all.sg-0b7a8a50f36454178]
 
   user_data = <<-EOF
               #!/bin/bash
@@ -67,7 +67,7 @@ resource "aws_instance" "frontend" {
   ami           = "ami-080995eccd0180687"
   instance_type = "t2.micro"
   subnet_id     = subnet-0953d8154276fb781
-  vpc_security_group_ids = [aws_security_group.allow_all.id]
+  vpc_security_group_ids = [aws_security_group.allow_all.sg-0b7a8a50f36454178]
 
   user_data = <<-EOF
               #!/bin/bash
