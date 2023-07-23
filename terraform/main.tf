@@ -44,7 +44,7 @@ resource "aws_security_group" "allow_all" {
 
 resource "aws_instance" "server" {
   ami           = "ami-080995eccd0180687"
-  instance_type = "t2.micro"
+  instance_type = "t3.micro"
   subnet_id     = aws_subnet.main.id
   vpc_security_group_ids = [aws_security_group.allow_all.id]
 
@@ -65,7 +65,7 @@ resource "aws_instance" "server" {
 
 resource "aws_instance" "frontend" {
   ami           = "ami-080995eccd0180687"
-  instance_type = "t2.micro"
+  instance_type = "t3.micro"
   subnet_id     = aws_subnet.main.id
   vpc_security_group_ids = [aws_security_group.allow_all.id]
 
