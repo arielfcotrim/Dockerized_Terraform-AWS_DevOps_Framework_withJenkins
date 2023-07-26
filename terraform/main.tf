@@ -56,7 +56,7 @@ resource "aws_instance" "server" {
               service docker start
               usermod -a -G docker ec2-user
               docker pull $DOCKER_USERNAME/$SERVER_IMAGE
-              docker run -d -p 3000:3000 $DOCKER_USERNAME/$SERVER_IMAGE
+              docker run -d -p 3001:3001 $DOCKER_USERNAME/$SERVER_IMAGE
               EOF
 
   tags = {
