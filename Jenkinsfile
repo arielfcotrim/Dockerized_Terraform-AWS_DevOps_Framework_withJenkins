@@ -60,13 +60,6 @@ pipeline {
                 dir('terraform') {
                     // Initialize Terraform
                     sh 'terraform init'
-                    // Export the Terraform environment variables
-                    // sh "export DOCKER_USERNAME=$DOCKER_USER"
-                    // sh "export SERVER_IMAGE=$SERVER_IMAGE"
-                    // sh "export FRONTEND_IMAGE=$FRONTEND_IMAGE"
-                    // // Apply the Terraform script automatically
-                    // sh 'terraform apply -auto-approve'
-                    // Set the Terraform environment variables using the 'withEnv' block
                     withEnv([
                         "AWS_ACCESS_KEY_ID=${env.AWS_ACCESS_KEY_ID}",
                         "AWS_SECRET_ACCESS_KEY=${env.AWS_SECRET_ACCESS_KEY}",
