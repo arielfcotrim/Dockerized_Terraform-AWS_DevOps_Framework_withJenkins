@@ -104,7 +104,7 @@ resource "aws_instance" "server" {
   instance_type = "t3.micro"
   subnet_id     = aws_subnet.main.id
   vpc_security_group_ids = [aws_security_group.my_security_group.id]
-  key_name      = red_project_ssh_key
+  key_name      = "red_project_ssh_key"
 
   user_data = <<-EOF
               #!/bin/bash
@@ -126,7 +126,7 @@ resource "aws_instance" "frontend" {
   instance_type = "t3.micro"
   subnet_id     = aws_subnet.main.id
   vpc_security_group_ids = [aws_security_group.my_security_group.id]
-  key_name      = red_project_ssh_key
+  key_name      = "red_project_ssh_key"
 
   user_data = <<-EOF
               #!/bin/bash
