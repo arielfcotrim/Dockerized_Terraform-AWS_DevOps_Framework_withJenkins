@@ -47,7 +47,7 @@ resource "aws_instance" "server" {
   ami           = "ami-080995eccd0180687"
   instance_type = "t3.micro"
   subnet_id     = aws_subnet.main.id
-  vpc_security_group_ids = [aws_security_group.launch_wizrd_1.id]
+  vpc_security_group_ids = [aws_security_group.launch_wizard_1.id]
 
   user_data = <<-EOF
               #!/bin/bash
@@ -68,7 +68,7 @@ resource "aws_instance" "frontend" {
   ami           = "ami-080995eccd0180687"
   instance_type = "t3.micro"
   subnet_id     = aws_subnet.main.id
-  vpc_security_group_ids = [aws_security_group.launch_wizrd_1.id]
+  vpc_security_group_ids = [aws_security_group.launch_wizard_1.id]
 
   user_data = <<-EOF
               #!/bin/bash
