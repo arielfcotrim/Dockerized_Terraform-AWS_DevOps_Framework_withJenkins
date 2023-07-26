@@ -23,24 +23,80 @@ resource "aws_subnet" "main" {
   map_public_ip_on_launch = true
 }
 
-resource "aws_security_group" "launch-wizard-1" {
-  name        = "launch-wizard-1"
+resource "aws_security_group" "my_security_group" {
+  name        = "my_security_group"
   description = "Allows access for React, Express, MongoDB"
   vpc_id      = aws_vpc.main.id
+}
 
-  ingress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+resource "aws_security_group_rule" "ssh" {
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.my_security_group.id
+  description       = "SSH access from anywhere"
+}
 
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+resource "aws_security_group_rule" "http" {
+  type              = "ingress"
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.my_security_group.id
+  description       = "HTTP access from anywhere"
+}
+
+resource "aws_security_group_rule" "https" {
+  type              = "ingress"
+  from_port         = 443
+  to_port           = 443
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.my_security_group.id
+  description       = "HTTPS access from anywhere"
+}
+
+resource "aws_security_group_rule" "react" {
+  type              = "ingress"
+  from_port         = 3000
+  to_port           = 3001
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.my_security_group.id
+  description       = "App access from anywhere"
+}
+
+resource "aws_security_group_rule" "express" {
+  type              = "ingress"
+  from_port         = 5000
+  to_port           = 5000
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.my_security_group.id
+  description       = "App access from anywhere"
+}
+
+resource "aws_security_group_rule" "mongodb" {
+  type              = "ingress"
+  from_port         = 27017
+  to_port           = 27017
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.my_security_group.id
+  description       = "DB access from anywhere"
+}
+
+resource "aws_security_group_rule" "egress_all" {
+  type              = "egress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.my_security_group.id
+  description       = "Allow all outbound traffic"
 }
 
 resource "aws_instance" "server" {
