@@ -114,18 +114,17 @@ resource "aws_security_group_rule" "egress_all" {
   type              = "egress"
   from_port         = 0
   to_port           = 0
-  protocol          = "-1"
+  protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = aws_security_group.my_security_group.id
   description       = "Allow all outbound traffic"
 }
 
 resource "aws_instance" "server" {
-  ami           = "ami-080995eccd0180687"
+  ami           = "ami-040d60c831d02d41c"
   instance_type = "t3.micro"
   subnet_id     = aws_subnet.main.id
   vpc_security_group_ids = [aws_security_group.my_security_group.id]
-  key_name      = "red_project_ssh_key"
 
   user_data = <<-EOF
               #!/bin/bash
@@ -143,11 +142,10 @@ resource "aws_instance" "server" {
 }
 
 resource "aws_instance" "frontend" {
-  ami           = "ami-080995eccd0180687"
+  ami           = "ami-040d60c831d02d41c"
   instance_type = "t3.micro"
   subnet_id     = aws_subnet.main.id
   vpc_security_group_ids = [aws_security_group.my_security_group.id]
-  key_name      = "red_project_ssh_key"
 
   user_data = <<-EOF
               #!/bin/bash
