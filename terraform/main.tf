@@ -23,6 +23,27 @@ resource "aws_subnet" "main" {
   map_public_ip_on_launch = true
 }
 
+# Create an Internet Gateway
+resource "aws_internet_gateway" "main" {
+  vpc_id = aws_vpc.main.id
+}
+
+# Create a Route Table
+resource "aws_route_table" "main" {
+  vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.main.id
+  }
+}
+
+# Associate the Route Table with Your Subnet
+resource "aws_route_table_association" "main" {
+  subnet_id      = aws_subnet.main.id
+  route_table_id = aws_route_table.main.id
+}
+
 resource "aws_security_group" "my_security_group" {
   name        = "my_security_group"
   description = "Allows access for React, Express, MongoDB"
