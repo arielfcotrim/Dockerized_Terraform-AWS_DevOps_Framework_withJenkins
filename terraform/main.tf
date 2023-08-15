@@ -17,10 +17,26 @@ resource "aws_vpc" "main" {
   cidr_block = "10.0.0.0/16"
 }
 
-resource "aws_subnet" "main" {
+# Create a public subnet for the frontend
+resource "aws_subnet" "public_subnet" {
   vpc_id     = aws_vpc.main.id
   cidr_block = "10.0.1.0/24"
   map_public_ip_on_launch = true
+}
+
+# Create a private subnet for the backend
+resource "aws_subnet" "private_subnet" {
+  vpc_id     = aws_vpc.main.id
+  cidr_block = "10.0.2.0/24"
+}
+
+# Create an Elastic IP for the NAT Gateway
+resource "aws_eip" "nat" {}
+
+# Create NAT Gateway in the public subnet
+resource "aws_nat_gateway" "main" {
+  allocation_id = aws_eip.nat.id
+  subnet_id     = aws_subnet.public_subnet.id
 }
 
 # Create an Internet Gateway
@@ -28,8 +44,8 @@ resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
 }
 
-# Create a Route Table
-resource "aws_route_table" "main" {
+# Route Table for the public subnet
+resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id
 
   route {
@@ -38,18 +54,37 @@ resource "aws_route_table" "main" {
   }
 }
 
-# Associate the Route Table with Your Subnet
-resource "aws_route_table_association" "main" {
-  subnet_id      = aws_subnet.main.id
-  route_table_id = aws_route_table.main.id
+# Route Table for the private subnet
+resource "aws_route_table" "private" {
+  vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.main.id
+  }
 }
 
+# Associate the public route table with the public subnet
+resource "aws_route_table_association" "public" {
+  subnet_id      = aws_subnet.public_subnet.id
+  route_table_id = aws_route_table.public.id
+}
+
+# Associate the private route table with the private subnet
+resource "aws_route_table_association" "private" {
+  subnet_id      = aws_subnet.private_subnet.id
+  route_table_id = aws_route_table.private.id
+}
+
+
+# Create a security group
 resource "aws_security_group" "my_security_group" {
   name        = "my_security_group"
   description = "Allows access for React, Express, MongoDB"
   vpc_id      = aws_vpc.main.id
 }
 
+# Create rules for the security group
 resource "aws_security_group_rule" "ssh" {
   type              = "ingress"
   from_port         = 22
@@ -123,7 +158,7 @@ resource "aws_security_group_rule" "egress_all" {
 resource "aws_instance" "server" {
   ami           = "ami-040d60c831d02d41c"
   instance_type = "t3.micro"
-  subnet_id     = aws_subnet.main.id
+  subnet_id     = aws_subnet.private_subnet.id
   vpc_security_group_ids = [aws_security_group.my_security_group.id]
 
   user_data = <<-EOF
@@ -144,7 +179,7 @@ resource "aws_instance" "server" {
 resource "aws_instance" "frontend" {
   ami           = "ami-040d60c831d02d41c"
   instance_type = "t3.micro"
-  subnet_id     = aws_subnet.main.id
+  subnet_id     = aws_subnet.public_subnet.id
   vpc_security_group_ids = [aws_security_group.my_security_group.id]
 
   user_data = <<-EOF
