@@ -1,3 +1,4 @@
+# Set up the required provider and its version for the Terraform configuration
 terraform {
   required_providers {
     aws = {
@@ -15,6 +16,9 @@ provider "aws" {
 # Create a VPC
 resource "aws_vpc" "main" {
   cidr_block = "10.0.0.0/16"
+  
+  enable_dns_support   = true  # Enables DNS resolution
+  enable_dns_hostnames = true  # Enables DNS hostnames
 }
 
 # Create a public subnet for the frontend
@@ -24,7 +28,7 @@ resource "aws_subnet" "public_subnet" {
   map_public_ip_on_launch = true
 }
 
-# Create a private subnet for the backend
+# Create a private subnet for the backend/server
 resource "aws_subnet" "private_subnet" {
   vpc_id     = aws_vpc.main.id
   cidr_block = "10.0.2.0/24"
@@ -76,15 +80,14 @@ resource "aws_route_table_association" "private" {
   route_table_id = aws_route_table.private.id
 }
 
-
-# Create a security group
+# Create a security group which is configured to allow access for React, Express, and MongoDB within the VPC
 resource "aws_security_group" "my_security_group" {
   name        = "my_security_group"
   description = "Allows access for React, Express, MongoDB"
   vpc_id      = aws_vpc.main.id
 }
 
-# Create rules for the security group
+# Rule to allow SSH access
 resource "aws_security_group_rule" "ssh" {
   type              = "ingress"
   from_port         = 22
@@ -95,6 +98,7 @@ resource "aws_security_group_rule" "ssh" {
   description       = "SSH access from anywhere"
 }
 
+# Rule to allow HTTP access
 resource "aws_security_group_rule" "http" {
   type              = "ingress"
   from_port         = 80
@@ -105,6 +109,7 @@ resource "aws_security_group_rule" "http" {
   description       = "HTTP access from anywhere"
 }
 
+# Rule to allow HTTPS access
 resource "aws_security_group_rule" "https" {
   type              = "ingress"
   from_port         = 443
@@ -115,6 +120,7 @@ resource "aws_security_group_rule" "https" {
   description       = "HTTPS access from anywhere"
 }
 
+# Rule to allow React app access
 resource "aws_security_group_rule" "react" {
   type              = "ingress"
   from_port         = 3000
@@ -125,6 +131,7 @@ resource "aws_security_group_rule" "react" {
   description       = "App access from anywhere"
 }
 
+# Rule to allow Express server access
 resource "aws_security_group_rule" "express" {
   type              = "ingress"
   from_port         = 5000
@@ -135,6 +142,7 @@ resource "aws_security_group_rule" "express" {
   description       = "App access from anywhere"
 }
 
+# Rule to allow MongoDB access
 resource "aws_security_group_rule" "mongodb" {
   type              = "ingress"
   from_port         = 27017
@@ -145,6 +153,7 @@ resource "aws_security_group_rule" "mongodb" {
   description       = "DB access from anywhere"
 }
 
+# Rule to allow all outbound traffic
 resource "aws_security_group_rule" "egress_all" {
   type              = "egress"
   from_port         = 0
@@ -155,12 +164,18 @@ resource "aws_security_group_rule" "egress_all" {
   description       = "Allow all outbound traffic"
 }
 
+# Define the EC2 instance for the server/backend
 resource "aws_instance" "server" {
+  # Specify the Amazon Machine Image ID
   ami           = "ami-040d60c831d02d41c"
+  # Define the instance type
   instance_type = "t3.micro"
+  # Associate the instance with the private subnet
   subnet_id     = aws_subnet.private_subnet.id
+  # Assign the custom security group to this instance
   vpc_security_group_ids = [aws_security_group.my_security_group.id]
 
+  # User data script to bootstrap the instance on startup
   user_data = <<-EOF
               #!/bin/bash
               yum update -y
@@ -176,12 +191,18 @@ resource "aws_instance" "server" {
   }
 }
 
+# Define the EC2 instance for the frontend
 resource "aws_instance" "frontend" {
+  # Specify the Amazon Machine Image ID
   ami           = "ami-040d60c831d02d41c"
+  # Define the instance type
   instance_type = "t3.micro"
+  # Associate the instance with the public subnet
   subnet_id     = aws_subnet.public_subnet.id
+  # Assign the custom security group to this instance
   vpc_security_group_ids = [aws_security_group.my_security_group.id]
 
+  # User data script to bootstrap the instance on startu
   user_data = <<-EOF
               #!/bin/bash
               yum update -y
