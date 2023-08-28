@@ -65,11 +65,16 @@ pipeline {
                     sh 'echo $DOCKER_USERNAME'
                     sh 'echo $SERVER_IMAGE'
                     sh 'echo $FRONTEND_IMAGE'
+
                     // Apply the Terraform script automatically
-                    sh '''terraform apply -auto-approve
-                        -var "DOCKER_USERNAME=${env.DOCKER_USERNAME}"
-                        -var "SERVER_IMAGE=${env.SERVER_IMAGE}"
-                        -var "FRONTEND_IMAGE=${env.FRONTEND_IMAGE}"'''
+                    sh """
+                        terraform apply -auto-approve \\
+                        -var 'AWS_ACCESS_KEY_ID=${env.AWS_ACCESS_KEY_ID}' \\
+                        -var 'AWS_SECRET_ACCESS_KEY=${env.AWS_SECRET_ACCESS_KEY}' \\
+                        -var 'DOCKER_USERNAME=${env.DOCKER_USER}' \\
+                        -var 'SERVER_IMAGE=${env.SERVER_IMAGE}' \\
+                        -var 'FRONTEND_IMAGE=${env.FRONTEND_IMAGE}' \\
+                    """
                 }
             }
         }
