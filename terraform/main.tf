@@ -1,5 +1,5 @@
 # Variable definitions
-variable "DOCKER_USERNAME" {}
+variable "DOCKER_USER" {}
 variable "SERVER_IMAGE" {}
 variable "FRONTEND_IMAGE" {}
 
