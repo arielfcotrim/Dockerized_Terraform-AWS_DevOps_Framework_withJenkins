@@ -67,7 +67,7 @@ pipeline {
                     //     "DOCKER_USERNAME=${env.DOCKER_USER}",
                     //     "SERVER_IMAGE=${env.SERVER_IMAGE}",
                     //     "FRONTEND_IMAGE=${env.FRONTEND_IMAGE}"
-                        ]) {
+                    //     ]) {
                         // Apply the Terraform script automatically
                         sh 'terraform apply -auto-approve'
                     }
