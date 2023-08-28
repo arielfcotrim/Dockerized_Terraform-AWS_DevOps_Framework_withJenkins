@@ -68,10 +68,12 @@ pipeline {
                         // "FRONTEND_IMAGE=${env.FRONTEND_IMAGE}"
                         ]) {
                         // Apply the Terraform script automatically
-                        sh '''terraform apply -auto-approve \
+                        sh '''#!/bin/bash
+                        terraform apply -auto-approve \
                         -var "DOCKER_USERNAME=${env.DOCKER_USER}" \
                         -var "SERVER_IMAGE=${env.SERVER_IMAGE}" \
-                        -var "FRONTEND_IMAGE=${env.FRONTEND_IMAGE}"'''
+                        -var "FRONTEND_IMAGE=${env.FRONTEND_IMAGE}"
+                        '''
                     }
                 }
             }
