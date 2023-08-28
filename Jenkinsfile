@@ -6,8 +6,10 @@ pipeline {
         FRONTEND_IMAGE = "red_proj_frontend:v1"
         // Docker Hub login credentials
         DOCKER_USERNAME = credentials('docker_username')
-        // DOCKER_USERNAME = "arielforner"
         DOCKER_PASSWORD = credentials('docker_password')
+        // AWS credentials for Terraform
+        AWS_ACCESS_KEY_ID = credentials('aws_access_key_id')
+        AWS_SECRET_ACCESS_KEY = credentials('aws_secret_access_key')
     }
 
     // run on any available Jenkins agent
