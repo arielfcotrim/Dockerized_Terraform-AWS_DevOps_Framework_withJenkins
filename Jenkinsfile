@@ -60,6 +60,10 @@ pipeline {
                 dir('terraform') {
                     // Initialize Terraform
                     sh 'terraform init'
+                    sh 'echo "Debugging variables"'
+                    sh 'echo $DOCKER_USERNAME'
+                    sh 'echo $SERVER_IMAGE'
+                    sh 'echo $FRONTEND_IMAGE'
                     // Apply the Terraform script automatically
                     sh '''terraform apply -auto-approve \
                         -var "DOCKER_USERNAME=${env.DOCKER_USER}" \
