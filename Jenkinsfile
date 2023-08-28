@@ -60,9 +60,7 @@ pipeline {
                 dir('terraform') {
                     // Initialize Terraform
                     sh 'terraform init'
-                    sh '-var "DOCKER_USERNAME=$DOCKER_USERNAME"'
-                    sh '-var "SERVER_IMAGE=$SERVER_IMAGE"'
-                    sh '-var "FRONTEND_IMAGE=$FRONTEND_IMAGE"'
+                    sh '-var "DOCKER_USERNAME=$DOCKER_USERNAME" -var "SERVER_IMAGE=$SERVER_IMAGE -var "FRONTEND_IMAGE=$FRONTEND_IMAGE"'
                     // withEnv([
                     //     "AWS_ACCESS_KEY_ID=${env.AWS_ACCESS_KEY_ID}",
                     //     "AWS_SECRET_ACCESS_KEY=${env.AWS_SECRET_ACCESS_KEY}",
