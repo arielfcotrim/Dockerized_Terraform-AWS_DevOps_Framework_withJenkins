@@ -60,16 +60,15 @@ pipeline {
                 dir('terraform') {
                     // Initialize Terraform
                     sh 'terraform init'
-                    sh '-var "DOCKER_USERNAME=$DOCKER_USERNAME" -var "SERVER_IMAGE=$SERVER_IMAGE -var "FRONTEND_IMAGE=$FRONTEND_IMAGE"'
                     withEnv([
                         "AWS_ACCESS_KEY_ID=${env.AWS_ACCESS_KEY_ID}",
-                        "AWS_SECRET_ACCESS_KEY=${env.AWS_SECRET_ACCESS_KEY}",
-                        "DOCKER_USERNAME=${env.DOCKER_USER}",
-                        "SERVER_IMAGE=${env.SERVER_IMAGE}",
-                        "FRONTEND_IMAGE=${env.FRONTEND_IMAGE}"
-                        ]) {
+                        "AWS_SECRET_ACCESS_KEY=${env.AWS_SECRET_ACCESS_KEY}"
+                    ]) {
                         // Apply the Terraform script automatically
-                        sh 'terraform apply -auto-approve'
+                        sh '''terraform apply -auto-approve \
+                            -var "DOCKER_USERNAME=${env.DOCKER_USER}" \
+                            -var "SERVER_IMAGE=${env.SERVER_IMAGE}" \
+                            -var "FRONTEND_IMAGE=${env.FRONTEND_IMAGE}"'''
                     }
                 }
             }
