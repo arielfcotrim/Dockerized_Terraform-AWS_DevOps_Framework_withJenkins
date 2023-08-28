@@ -5,8 +5,8 @@ pipeline {
         SERVER_IMAGE = "red_proj_server:v1"
         FRONTEND_IMAGE = "red_proj_frontend:v1"
         // Docker Hub login credentials
-        // DOCKER_USERNAME = credentials('docker_username')
-        DOCKER_USERNAME = "arielforner"
+        DOCKER_USERNAME = credentials('docker_username')
+        // DOCKER_USERNAME = "arielforner"
         DOCKER_PASSWORD = credentials('docker_password')
         // AWS credentials for Terraform
         AWS_ACCESS_KEY_ID = credentials('aws_access_key_id')
