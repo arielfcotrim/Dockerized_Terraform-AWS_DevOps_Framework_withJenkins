@@ -56,22 +56,23 @@ pipeline {
 
         stage('Delivery') {
             steps {
-                // Change to the directory containing the Terraform script
                 dir('terraform') {
-                    // Initialize Terraform
                     sh 'terraform init'
-                    sh 'echo "Debugging variables"'
-                    sh 'echo $DOCKER_USERNAME'
-                    sh 'echo $SERVER_IMAGE'
-                    sh 'echo $FRONTEND_IMAGE'
-
-                    // Apply the Terraform script automatically
-                    sh """
+                    withEnv([
+                        "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}",
+                        "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}",
+                        "DOCKER_USERNAME=${DOCKER_USERNAME}",
+                        "SERVER_IMAGE=${SERVER_IMAGE}",
+                        "FRONTEND_IMAGE=${FRONTEND_IMAGE}"
+                ]) {
+                    sh '''
                         terraform apply -auto-approve \\
-                        -var 'DOCKER_USERNAME=${env.DOCKER_USER}' \\
-                        -var 'SERVER_IMAGE=${env.SERVER_IMAGE}' \\
-                        -var 'FRONTEND_IMAGE=${env.FRONTEND_IMAGE}' \\
-                    """
+                        -var "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" \\
+                        -var "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" \\
+                        -var "DOCKER_USERNAME=${DOCKER_USERNAME}" \\
+                        -var "SERVER_IMAGE=${SERVER_IMAGE}" \\
+                        -var "FRONTEND_IMAGE=${FRONTEND_IMAGE}"\\
+                    '''
                 }
             }
         }
