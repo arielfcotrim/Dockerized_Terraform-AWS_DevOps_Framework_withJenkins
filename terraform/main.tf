@@ -170,6 +170,8 @@ resource "aws_instance" "server" {
   ami           = "ami-040d60c831d02d41c"
   # Define the instance type
   instance_type = "t3.micro"
+  # Define the SSH key for the instance
+  key_name = "red_project_ssh_key"
   # Associate the instance with the private subnet
   subnet_id     = aws_subnet.private_subnet.id
   # Assign the custom security group to this instance
@@ -197,6 +199,8 @@ resource "aws_instance" "frontend" {
   ami           = "ami-040d60c831d02d41c"
   # Define the instance type
   instance_type = "t3.micro"
+  # Define the SSH key for the instance
+  key_name = "red_project_ssh_key"
   # Associate the instance with the public subnet
   subnet_id     = aws_subnet.public_subnet.id
   # Assign the custom security group to this instance
