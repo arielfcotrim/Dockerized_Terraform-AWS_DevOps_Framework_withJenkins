@@ -185,10 +185,10 @@ resource "aws_instance" "server" {
   # User data script to bootstrap the instance on startup
   user_data = <<-EOF
               #!/bin/bash
-              yum update -y
-              yum install -y docker
-              systemctl start docker
-              usermod -a -G docker ec2-user
+              sudo yum update -y
+              sudo yum install -y docker
+              sudo service docker start
+              sudo usermod -a -G docker ec2-user
               docker pull ${var.DOCKER_USERNAME}/${var.SERVER_IMAGE}
               docker run -d -p 3001:3001 ${var.DOCKER_USERNAME}/${var.SERVER_IMAGE}
               EOF
@@ -214,10 +214,10 @@ resource "aws_instance" "frontend" {
   # User data script to bootstrap the instance on startu
   user_data = <<-EOF
               #!/bin/bash
-              yum update -y
-              yum install -y docker
-              systemctl start docker
-              usermod -a -G docker ec2-user
+              sudo yum update -y
+              sudo yum install -y docker
+              sudo service docker start
+              sudo usermod -a -G docker ec2-user
               docker pull ${var.DOCKER_USERNAME}/${var.FRONTEND_IMAGE}
               docker run -d -p 3000:3000 ${var.DOCKER_USERNAME}/${var.SERVER_IMAGE}
               EOF
