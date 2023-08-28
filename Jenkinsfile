@@ -5,7 +5,7 @@ pipeline {
         SERVER_IMAGE = "red_proj_server:v1"
         FRONTEND_IMAGE = "red_proj_frontend:v1"
         // Docker Hub login credentials
-        DOCKER_USER = credentials('docker_username')
+        DOCKER_USERNAME = credentials('docker_username')
         DOCKER_PASSWORD = credentials('docker_password')
         // AWS credentials for Terraform
         AWS_ACCESS_KEY_ID = credentials('aws_access_key_id')
@@ -44,13 +44,13 @@ pipeline {
         stage('Deployment') {
             steps {
                 // Build the Docker images with the Docker Hub username and repository included in the image name
-                sh "docker build -t $DOCKER_USER/$SERVER_IMAGE server"
-                sh "docker build -t $DOCKER_USER/$FRONTEND_IMAGE frontend"
+                sh "docker build -t $DOCKER_USERNAME/$SERVER_IMAGE server"
+                sh "docker build -t $DOCKER_USERNAME/$FRONTEND_IMAGE frontend"
                 // Log in to Docker Hub
-                sh "docker login -u $DOCKER_USER -p $DOCKER_PASSWORD"
+                sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
                 // Push the images to Docker Hub
-                sh "docker push $DOCKER_USER/$SERVER_IMAGE"
-                sh "docker push $DOCKER_USER/$FRONTEND_IMAGE"
+                sh "docker push $DOCKER_USERNAME/$SERVER_IMAGE"
+                sh "docker push $DOCKER_USERNAME/$FRONTEND_IMAGE"
             }
         }
 
@@ -70,7 +70,7 @@ pipeline {
                         // Apply the Terraform script automatically
                         sh '''#!/bin/bash
                         terraform apply -auto-approve \
-                        -var "DOCKER_USERNAME=${env.DOCKER_USER}" \
+                        -var "DOCKER_USERNAME=${env.DOCKER_USERNAME}" \
                         -var "SERVER_IMAGE=${env.SERVER_IMAGE}" \
                         -var "FRONTEND_IMAGE=${env.FRONTEND_IMAGE}"
                         '''
