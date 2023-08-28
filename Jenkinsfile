@@ -65,7 +65,7 @@ pipeline {
                         "SERVER_IMAGE=${SERVER_IMAGE}",
                         "FRONTEND_IMAGE=${FRONTEND_IMAGE}"
                 ]) {
-                    sh '''
+                    sh '''\\
                         terraform apply -auto-approve \\
                         -var "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" \\
                         -var "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" \\
@@ -73,8 +73,9 @@ pipeline {
                         -var "SERVER_IMAGE=${SERVER_IMAGE}" \\
                         -var "FRONTEND_IMAGE=${FRONTEND_IMAGE}"\\
                     '''
+                    }
                 }
             }
-        }
+        }   
     }
 }
