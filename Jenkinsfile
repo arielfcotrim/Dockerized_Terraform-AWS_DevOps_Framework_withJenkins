@@ -5,7 +5,8 @@ pipeline {
         SERVER_IMAGE = "red_proj_server:v1"
         FRONTEND_IMAGE = "red_proj_frontend:v1"
         // Docker Hub login credentials
-        DOCKER_USERNAME = credentials('docker_username')
+        // DOCKER_USERNAME = credentials('docker_username')
+        DOCKER_USERNAME = "arielforner"
         DOCKER_PASSWORD = credentials('docker_password')
         // AWS credentials for Terraform
         AWS_ACCESS_KEY_ID = credentials('aws_access_key_id')
@@ -65,9 +66,9 @@ pipeline {
                     sh 'echo $SERVER_IMAGE'
                     sh 'echo $FRONTEND_IMAGE'
                     // Apply the Terraform script automatically
-                    sh '''terraform apply -auto-approve \
-                        -var "DOCKER_USERNAME=${env.DOCKER_USER}" \
-                        -var "SERVER_IMAGE=${env.SERVER_IMAGE}" \
+                    sh '''terraform apply -auto-approve
+                        -var "DOCKER_USERNAME=${env.DOCKER_USER}"
+                        -var "SERVER_IMAGE=${env.SERVER_IMAGE}"
                         -var "FRONTEND_IMAGE=${env.FRONTEND_IMAGE}"'''
                 }
             }
