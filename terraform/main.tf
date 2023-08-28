@@ -182,7 +182,7 @@ resource "aws_instance" "server" {
               #!/bin/bash
               yum update -y
               yum install -y docker
-              service docker start
+              systemctl docker start
               usermod -a -G docker ec2-user
               docker pull $DOCKER_USERNAME/$SERVER_IMAGE
               docker run -d -p 3001:3001 $DOCKER_USERNAME/$SERVER_IMAGE
@@ -211,7 +211,7 @@ resource "aws_instance" "frontend" {
               #!/bin/bash
               yum update -y
               yum install -y docker
-              service docker start
+              systemctl docker start
               usermod -a -G docker ec2-user
               docker pull $DOCKER_USERNAME/$FRONTEND_IMAGE
               docker run -d -p 3000:3000 $DOCKER_USERNAME/$FRONTEND_IMAGE

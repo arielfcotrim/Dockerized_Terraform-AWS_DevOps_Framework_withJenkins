@@ -2,8 +2,8 @@ pipeline {
     // Define environment variables
     environment {
         // Image names for the server and frontend
-        SERVER_IMAGE = 'red_proj_server:v1'
-        FRONTEND_IMAGE = 'red_proj_frontend:v1'
+        SERVER_IMAGE = "red_proj_server:v1"
+        FRONTEND_IMAGE = "red_proj_frontend:v1"
         // Docker Hub login credentials
         DOCKER_USER = credentials('docker_username')
         DOCKER_PASSWORD = credentials('docker_password')
