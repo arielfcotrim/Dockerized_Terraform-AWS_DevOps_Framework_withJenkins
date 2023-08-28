@@ -1,4 +1,6 @@
 # Variable definitions
+variable "AWS_ACCESS_KEY_ID" {}
+variable "AWS_SECRET_ACCESS_KEY" {}
 variable "DOCKER_USERNAME" {}
 variable "SERVER_IMAGE" {}
 variable "FRONTEND_IMAGE" {}
@@ -16,6 +18,8 @@ terraform {
 # Configure the AWS Provider
 provider "aws" {
   region = "eu-north-1"
+  access_key = var.AWS_ACCESS_KEY_ID
+  secret_key = var.AWS_SECRET_ACCESS_KEY
 }
 
 # Create a VPC
