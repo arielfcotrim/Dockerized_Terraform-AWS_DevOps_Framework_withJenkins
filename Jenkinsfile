@@ -60,16 +60,28 @@ pipeline {
                     sh 'terraform init'
                     withEnv([
                         "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}",
-                        "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}"
+                        "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}",
+                        "DOCKER_USERNAME=${DOCKER_USERNAME}",
+                        "SERVER_IMAGE=${SERVER_IMAGE}",
+                        "FRONTEND_IMAGE=${FRONTEND_IMAGE}"
                 ]) {
                     sh '''\\
-                        terraform apply -auto-approve \\
-                        -var "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" \\
-                        -var "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" \\
+                        export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+                        export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+                        export DOCKER_USERNAME=${DOCKER_USERNAME}
+                        export SERVER_IMAGE=${SERVER_IMAGE}
+                        export FRONTEND_IMAGE=${FRONTEND_IMAGE}
+
+                        terraform apply -auto-approve \
+                        -var "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" \
+                        -var "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" \
+                        -var "DOCKER_USERNAME=${DOCKER_USERNAME}" \
+                        -var "SERVER_IMAGE=${SERVER_IMAGE}" \
+                        -var "FRONTEND_IMAGE=${FRONTEND_IMAGE}"
                     '''
                     }
                 }
             }
-        }   
+        }
     }
 }

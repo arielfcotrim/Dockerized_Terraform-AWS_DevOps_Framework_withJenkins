@@ -1,6 +1,9 @@
 # Variable Definitions
 variable "AWS_ACCESS_KEY_ID" {}
 variable "AWS_SECRET_ACCESS_KEY" {}
+variable "DOCKER_USERNAME" {}
+variable "SERVER_IMAGE" {}
+variable "FRONTEND_IMAGE" {}
 
 # Set up the required provider and its version for the Terraform configuration
 terraform {
@@ -190,8 +193,8 @@ resource "aws_instance" "server" {
               sudo yum install -y docker
               sudo service docker start
               sudo usermod -a -G docker ec2-user
-              sudo docker pull arielforner/red_proj_server:v1
-              sudo docker run -d -p 3000:3000 arielforner/red_proj_server:v1
+              sudo docker pull ${var.DOCKER_USERNAME}/${var.SERVER_IMAGE}
+              sudo docker run -d -p 3001:3001 ${var.DOCKER_USERNAME}/${var.SERVER_IMAGE}
               EOF
 
   tags = {
@@ -219,8 +222,8 @@ resource "aws_instance" "frontend" {
               sudo yum install -y docker
               sudo service docker start
               sudo usermod -a -G docker ec2-user
-              sudo docker pull arielforner/red_proj_frontend:v1
-              sudo docker run -d -p 3000:3000 arielforner/red_proj_frontend:v1
+              sudo docker pull ${var.DOCKER_USERNAME}/${var.FRONTEND_IMAGE}
+              sudo docker run -d -p 3000:3000 ${var.DOCKER_USERNAME}/${var.FRONTEND_IMAGE}
               EOF
 
   tags = {
