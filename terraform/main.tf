@@ -191,7 +191,7 @@ resource "aws_instance" "server" {
               sudo service docker start
               sudo usermod -a -G docker ec2-user
               sudo docker pull arielforner/red_proj_server:v1
-              sudo docker run -d -p 3001:3001 arielforner/red_proj_server:v1
+              sudo docker run -d -p 3000:3000 arielforner/red_proj_server:v1
               EOF
 
   tags = {
