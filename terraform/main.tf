@@ -232,7 +232,7 @@ resource "aws_instance" "frontend" {
   vpc_security_group_ids = [aws_security_group.my_security_group.id]
 
   # Create the instance only once you have the instance data
-  depends_on = [aws_instance.backend_instance_data]
+  depends_on = [data.aws_instance.backend_instance_data]
 
   # User data script to bootstrap the instance on startu
   user_data = <<-EOF
