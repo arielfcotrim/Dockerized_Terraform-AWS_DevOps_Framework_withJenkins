@@ -2,7 +2,7 @@
 variable "AWS_ACCESS_KEY_ID" {}
 variable "AWS_SECRET_ACCESS_KEY" {}
 variable "DOCKER_USERNAME" {}
-variable "SERVER_IMAGE" {}
+variable "BACKEND_IMAGE" {}
 variable "FRONTEND_IMAGE" {}
 
 # Set up the required provider and its version for the Terraform configuration
@@ -37,7 +37,7 @@ resource "aws_subnet" "public_subnet" {
   map_public_ip_on_launch = true
 }
 
-# Create a private subnet for the backend/server
+# Create a private subnet for the backend
 resource "aws_subnet" "private_subnet" {
   vpc_id     = aws_vpc.main.id
   cidr_block = "10.0.2.0/24"
@@ -140,7 +140,7 @@ resource "aws_security_group_rule" "react" {
   description       = "App access from anywhere"
 }
 
-# Rule to allow Express server access
+# Rule to allow Express backend access
 resource "aws_security_group_rule" "express" {
   type              = "ingress"
   from_port         = 5000
@@ -184,14 +184,14 @@ resource "aws_security_group_rule" "egress_all" {
   description       = "Allow all outbound traffic"
 }
 
-# Define the EC2 instance for the server/backend
-resource "aws_instance" "server" {
+# Define the EC2 instance for the backend
+resource "aws_instance" "backend_instance" {
   # Specify the Amazon Machine Image ID
   ami           = "ami-040d60c831d02d41c"
   # Define the instance type
-  instance_type = "t3.micro"
+  instance_type = "t2.micro"
   # Define the SSH key for the instance
-  key_name = "red_project_ssh_key"
+  key_name      = "red_project_ssh_key"
   # Associate the instance with the private subnet
   subnet_id     = aws_subnet.private_subnet.id
   # Assign the custom security group to this instance
@@ -204,13 +204,18 @@ resource "aws_instance" "server" {
               sudo yum install -y docker
               sudo service docker start
               sudo usermod -a -G docker ec2-user
-              sudo docker pull ${var.DOCKER_USERNAME}/${var.SERVER_IMAGE}
-              sudo docker run -d -p 3001:3001 ${var.DOCKER_USERNAME}/${var.SERVER_IMAGE}
+              sudo docker pull ${var.DOCKER_USERNAME}/${var.BACKEND_IMAGE}
+              sudo docker run -d -p 3001:3001 ${var.DOCKER_USERNAME}/${var.BACKEND_IMAGE}
               EOF
 
   tags = {
-    Name = "Server"
+    Name = "Backend"
   }
+}
+
+# Fetch and export attributes of the backend EC2 instance
+data "aws_instance" "backend_instance_data" {
+  instance_id = aws_instance.backend_instace.id
 }
 
 # Define the EC2 instance for the frontend
@@ -218,15 +223,16 @@ resource "aws_instance" "frontend" {
   # Specify the Amazon Machine Image ID
   ami           = "ami-040d60c831d02d41c"
   # Define the instance type
-  instance_type = "t3.micro"
+  instance_type = "t2.micro"
   # Define the SSH key for the instance
-  key_name = "red_project_ssh_key"
+  key_name      = "red_project_ssh_key"
   # Associate the instance with the public subnet
   subnet_id     = aws_subnet.public_subnet.id
   # Assign the custom security group to this instance
   vpc_security_group_ids = [aws_security_group.my_security_group.id]
 
-  depends_on = [aws_instance.server]
+  # Create the instance only once you have the instance data
+  depends_on = [aws_instance.backend_instance_data]
 
   # User data script to bootstrap the instance on startu
   user_data = <<-EOF
@@ -236,8 +242,8 @@ resource "aws_instance" "frontend" {
               sudo service docker start
               sudo usermod -a -G docker ec2-user
               sudo docker pull ${var.DOCKER_USERNAME}/${var.FRONTEND_IMAGE}
-              SERVER_IP=$(aws ec2 describe-instances --instance-ids ${aws_instance.server.id} --query 'Reservations[*].Instances[*].PrivateIpAddress' --output text)
-              docker run -d -e SERVER_URL=http://$SERVER_IP:3001 -p 3000:3000 ${var.DOCKER_USERNAME}/${var.FRONTEND_IMAGE}
+              BACKEND_IP=${data.aws_instance.backend_instance_data.private_ip}
+              docker run -d -e BACKEND_URL=http://$BACKEND_IP:3001 -p 3000:3000 ${var.DOCKER_USERNAME}/${var.FRONTEND_IMAGE}
               EOF
 
   tags = {
