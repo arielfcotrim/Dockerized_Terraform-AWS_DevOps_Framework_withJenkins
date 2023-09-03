@@ -226,6 +226,8 @@ resource "aws_instance" "frontend" {
   # Assign the custom security group to this instance
   vpc_security_group_ids = [aws_security_group.my_security_group.id]
 
+  depends_on = [aws_instance.server]
+
   # User data script to bootstrap the instance on startu
   user_data = <<-EOF
               #!/bin/bash
@@ -234,7 +236,8 @@ resource "aws_instance" "frontend" {
               sudo service docker start
               sudo usermod -a -G docker ec2-user
               sudo docker pull ${var.DOCKER_USERNAME}/${var.FRONTEND_IMAGE}
-              sudo docker run -d -p 3000:3000 ${var.DOCKER_USERNAME}/${var.FRONTEND_IMAGE}
+              SERVER_IP=$(aws ec2 describe-instances --instance-ids ${aws_instance.server.id} --query 'Reservations[*].Instances[*].PrivateIpAddress' --output text)
+              docker run -d -e SERVER_URL=http://$SERVER_IP:3001 -p 3000:3000 ${var.DOCKER_USERNAME}/${var.FRONTEND_IMAGE}
               EOF
 
   tags = {
