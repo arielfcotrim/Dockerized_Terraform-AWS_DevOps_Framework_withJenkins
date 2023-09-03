@@ -215,7 +215,7 @@ resource "aws_instance" "backend_instance" {
 
 # Fetch and export attributes of the backend EC2 instance
 data "aws_instance" "backend_instance_data" {
-  instance_id = aws_instance.backend_instace.id
+  instance_id = aws_instance.backend_instance.id
 }
 
 # Define the EC2 instance for the frontend
