@@ -231,6 +231,8 @@ resource "aws_instance" "frontend" {
   # Assign the custom security group to this instance
   vpc_security_group_ids = [aws_security_group.my_security_group.id]
 
+  depends_on = [data.aws_instance.backend_instance_data]
+
   # User data script to bootstrap the instance on startu
   user_data = <<-EOF
               #!/bin/bash
