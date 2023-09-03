@@ -189,7 +189,7 @@ resource "aws_instance" "backend_instance" {
   # Specify the Amazon Machine Image ID
   ami           = "ami-040d60c831d02d41c"
   # Define the instance type
-  instance_type = "t2.micro"
+  instance_type = "t3.micro"
   # Define the SSH key for the instance
   key_name      = "red_project_ssh_key"
   # Associate the instance with the private subnet
@@ -223,7 +223,7 @@ resource "aws_instance" "frontend" {
   # Specify the Amazon Machine Image ID
   ami           = "ami-040d60c831d02d41c"
   # Define the instance type
-  instance_type = "t2.micro"
+  instance_type = "t3.micro"
   # Define the SSH key for the instance
   key_name      = "red_project_ssh_key"
   # Associate the instance with the public subnet
