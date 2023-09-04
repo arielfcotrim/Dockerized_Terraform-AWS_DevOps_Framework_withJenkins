@@ -242,7 +242,7 @@ resource "aws_security_group_rule" "ssh" {
   to_port           = 22
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.my_security_group.id
+  security_group_id = aws_security_group.vpc_security_group.id
   description       = "SSH access from anywhere"
 }
 
@@ -253,7 +253,7 @@ resource "aws_security_group_rule" "http" {
   to_port           = 80
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.my_security_group.id
+  security_group_id = aws_security_group.vpc_security_group.id
   description       = "HTTP access from anywhere"
 }
 
@@ -264,7 +264,7 @@ resource "aws_security_group_rule" "https" {
   to_port           = 443
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.my_security_group.id
+  security_group_id = aws_security_group.vpc_security_group.id
   description       = "HTTPS access from anywhere"
 }
 
@@ -275,7 +275,7 @@ resource "aws_security_group_rule" "react" {
   to_port           = 3001
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.my_security_group.id
+  security_group_id = aws_security_group.vpc_security_group.id
   description       = "App access from anywhere"
 }
 
@@ -286,7 +286,7 @@ resource "aws_security_group_rule" "express" {
   to_port           = 5000
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.my_security_group.id
+  security_group_id = aws_security_group.vpc_security_group.id
   description       = "App access from anywhere"
 }
 
@@ -297,7 +297,7 @@ resource "aws_security_group_rule" "mongodb" {
   to_port           = 27017
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.my_security_group.id
+  security_group_id = aws_security_group.vpc_security_group.id
   description       = "DB access from anywhere"
 }
 
@@ -308,7 +308,7 @@ resource "aws_security_group_rule" "egress_all" {
   to_port           = 0
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.my_security_group.id
+  security_group_id = aws_security_group.vpc_security_group.id
   description       = "Allow all outbound traffic"
 }
 
