@@ -210,9 +210,9 @@ resource "aws_security_group" "elb_security_group" {
   }
 }
 
-# Create a security group which is configured to allow access for React, Express, and MongoDB within the VPC
-resource "aws_security_group" "my_security_group" {
-  name        = "my_security_group"
+# Create a security group for the VPC
+resource "aws_security_group" "vpc_security_group" {
+  name        = "vpc_security_group"
   description = "Allows access for React, Express, MongoDB"
   vpc_id      = aws_vpc.main.id
   # Allow incoming traffic on port 5000 (Express) only from ELB's security group
@@ -231,7 +231,7 @@ resource "aws_security_group_rule" "internal_vpc" {
   to_port     = 65535  # can be more specific
   protocol    = "tcp"
   self        = true
-  security_group_id = aws_security_group.my_security_group.id
+  security_group_id = aws_security_group.vpc_security_group.id
   description = "Allow internal VPC communication"
 }
 
@@ -242,7 +242,7 @@ resource "aws_security_group_rule" "egress_all" {
   to_port           = 0
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.my_security_group.id
+  security_group_id = aws_security_group.vpc_security_group.id
   description       = "Allow all outbound traffic"
 }
 
@@ -251,7 +251,7 @@ resource "aws_lb" "backend_lb" {
   name               = "backend-lb"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = [aws_security_group.my_security_group.id]
+  security_groups    = [aws_security_group.vpc_security_group.id]
   subnets            = [aws_subnet.public_subnet_1.id, aws_subnet.public_subnet_2.id]
 
   enable_deletion_protection = false
@@ -286,7 +286,7 @@ resource "aws_instance" "backend_instance_1" {
   instance_type = "t3.micro"
   key_name      = "red_project_ssh_key"
   subnet_id     = aws_subnet.private_subnet_1.id
-  vpc_security_group_ids = [aws_security_group.my_security_group.id]
+  vpc_security_group_ids = [aws_security_group.vpc_security_group.id]
 
   user_data = <<-EOF
               #!/bin/bash
@@ -308,7 +308,7 @@ resource "aws_instance" "backend_instance_2" {
   instance_type = "t3.micro"
   key_name      = "red_project_ssh_key"
   subnet_id     = aws_subnet.private_subnet_2.id
-  vpc_security_group_ids = [aws_security_group.my_security_group.id]
+  vpc_security_group_ids = [aws_security_group.vpc_security_group.id]
 
   user_data = <<-EOF
               #!/bin/bash
@@ -378,7 +378,7 @@ resource "aws_instance" "frontend_1" {
   instance_type          = "t3.micro"
   key_name               = "red_project_ssh_key"
   subnet_id              = aws_subnet.public_subnet_1.id
-  vpc_security_group_ids = [aws_security_group.my_security_group.id]
+  vpc_security_group_ids = [aws_security_group.vpc_security_group.id]
 
   user_data = <<-EOF
               #!/bin/bash
@@ -402,7 +402,7 @@ resource "aws_instance" "frontend_2" {
   instance_type          = "t3.micro"
   key_name               = "red_project_ssh_key"
   subnet_id              = aws_subnet.public_subnet_2.id
-  vpc_security_group_ids = [aws_security_group.my_security_group.id]
+  vpc_security_group_ids = [aws_security_group.vpc_security_group.id]
 
   user_data = <<-EOF
               #!/bin/bash
