@@ -220,7 +220,7 @@ resource "aws_security_group" "vpc_security_group" {
     from_port   = 5000
     to_port     = 5000
     protocol    = "tcp"
-    security_groups = [aws_security_group.elb_security_group.name]
+    security_groups = [aws_security_group.elb_security_group.id]
   }
 }
 
