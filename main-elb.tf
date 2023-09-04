@@ -348,7 +348,7 @@ resource "aws_lb_target_group" "backend_tg" {
 }
 
 resource "aws_instance" "backend_instance_1" {
-  ami           = "ami-0b4ab8a966e0c2b21"
+  ami           = "ami-040d60c831d02d41c"
   instance_type = "t3.micro"
   key_name      = "red_project_ssh_key"
   subnet_id     = aws_subnet.private_subnet_1.id
@@ -370,7 +370,7 @@ resource "aws_instance" "backend_instance_1" {
 }
 
 resource "aws_instance" "backend_instance_2" {
-  ami           = "ami-0b4ab8a966e0c2b21"
+  ami           = "ami-040d60c831d02d41c"
   instance_type = "t3.micro"
   key_name      = "red_project_ssh_key"
   subnet_id     = aws_subnet.private_subnet_2.id
@@ -440,7 +440,7 @@ resource "aws_lb_target_group" "frontend_tg" {
 
 # Define the EC2 instance for the frontend in AZ 1
 resource "aws_instance" "frontend_1" {
-  ami                    = "ami-0b4ab8a966e0c2b21"
+  ami                    = "ami-040d60c831d02d41c"
   instance_type          = "t3.micro"
   key_name               = "red_project_ssh_key"
   subnet_id              = aws_subnet.public_subnet_1.id
@@ -464,7 +464,7 @@ resource "aws_instance" "frontend_1" {
 
 # Define the EC2 instance for the frontend in AZ 2
 resource "aws_instance" "frontend_2" {
-  ami                    = "ami-0b4ab8a966e0c2b21"
+  ami                    = "ami-040d60c831d02d41c"
   instance_type          = "t3.micro"
   key_name               = "red_project_ssh_key"
   subnet_id              = aws_subnet.public_subnet_2.id
