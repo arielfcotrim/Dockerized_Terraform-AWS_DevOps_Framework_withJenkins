@@ -301,17 +301,6 @@ resource "aws_security_group_rule" "mongodb" {
   description       = "DB access from anywhere"
 }
 
-# Rule to allow internal VPC communication
-resource "aws_security_group_rule" "internal_vpc" {
-  type        = "ingress"
-  from_port   = 0  # can be more specific
-  to_port     = 65535  # can be more specific
-  protocol    = "tcp"
-  self        = true
-  security_group_id = aws_security_group.my_security_group.id
-  description = "Allow internal VPC communication"
-}
-
 # Rule to allow all outbound traffic
 resource "aws_security_group_rule" "egress_all" {
   type              = "egress"
