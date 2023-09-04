@@ -224,61 +224,6 @@ resource "aws_security_group" "my_security_group" {
   }
 }
 
-# Rule to allow SSH access
-resource "aws_security_group_rule" "ssh" {
-  type              = "ingress"
-  from_port         = 22
-  to_port           = 22
-  protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.my_security_group.id
-  description       = "SSH access from anywhere"
-}
-
-# Rule to allow HTTP access
-resource "aws_security_group_rule" "http" {
-  type              = "ingress"
-  from_port         = 80
-  to_port           = 80
-  protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.my_security_group.id
-  description       = "HTTP access from anywhere"
-}
-
-# Rule to allow HTTPS access
-resource "aws_security_group_rule" "https" {
-  type              = "ingress"
-  from_port         = 443
-  to_port           = 443
-  protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.my_security_group.id
-  description       = "HTTPS access from anywhere"
-}
-
-# Rule to allow React app access
-resource "aws_security_group_rule" "react" {
-  type              = "ingress"
-  from_port         = 3000
-  to_port           = 3001
-  protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.my_security_group.id
-  description       = "App access from anywhere"
-}
-
-# Rule to allow MongoDB access
-resource "aws_security_group_rule" "mongodb" {
-  type              = "ingress"
-  from_port         = 27017
-  to_port           = 27017
-  protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.my_security_group.id
-  description       = "DB access from anywhere"
-}
-
 # Rule to allow internal VPC communication
 resource "aws_security_group_rule" "internal_vpc" {
   type        = "ingress"
@@ -426,8 +371,6 @@ resource "aws_instance" "frontend" {
   subnet_id     = aws_subnet.public_subnet.id
   # Assign the custom security group to this instance
   vpc_security_group_ids = [aws_security_group.my_security_group.id]
-  # Instance depends on the IP Address within the instance
-  depends_on = [data.aws_instance.backend_instance_data]
 
   # User data script to bootstrap the instance on startup
   user_data = <<-EOF
