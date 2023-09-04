@@ -187,7 +187,7 @@ resource "aws_security_group_rule" "egress_all" {
 # Define the EC2 instance for the backend
 resource "aws_instance" "backend_instance" {
   # Specify the Amazon Machine Image ID
-  ami           = "ami-040d60c831d02d41c"
+  ami           = "ami-0b4ab8a966e0c2b21"
   # Define the instance type
   instance_type = "t2.micro"
   # Define the SSH key for the instance
@@ -221,7 +221,7 @@ data "aws_instance" "backend_instance_data" {
 # Define the EC2 instance for the frontend
 resource "aws_instance" "frontend" {
   # Specify the Amazon Machine Image ID
-  ami           = "ami-040d60c831d02d41c"
+  ami           = "ami-0b4ab8a966e0c2b21"
   # Define the instance type
   instance_type = "t2.micro"
   # Define the SSH key for the instance
