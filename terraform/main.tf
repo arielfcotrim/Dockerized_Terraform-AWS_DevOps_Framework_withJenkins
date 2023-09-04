@@ -252,7 +252,7 @@ resource "aws_lb" "backend_lb" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.my_security_group.id]
-  subnets            = [aws_subnet.public_subnet.id]  # Using the public subnet for simplicity
+  subnets            = [aws_subnet.public_subnet_1.id, aws_subnet.public_subnet_2.id]
 
   enable_deletion_protection = false
 
@@ -281,27 +281,13 @@ resource "aws_lb_target_group" "backend_tg" {
   vpc_id   = aws_vpc.main.id
 }
 
-# Register Backend EC2 Instances with the Backend Target Group
-resource "aws_lb_target_group_attachment" "backend_tg_attachment" {
-  target_group_arn = aws_lb_target_group.backend_tg.arn
-  target_id        = aws_instance.backend_instance.id
-  port             = 3001
-}
-
-# Define the EC2 instance for the backend
-resource "aws_instance" "backend_instance" {
-  # Specify the Amazon Machine Image ID
+resource "aws_instance" "backend_instance_1" {
   ami           = "ami-0b4ab8a966e0c2b21"
-  # Define the instance type
   instance_type = "t3.micro"
-  # Define the SSH key for the instance
   key_name      = "red_project_ssh_key"
-  # Associate the instance with the private subnet
-  subnet_id     = aws_subnet.private_subnet.id
-  # Assign the custom security group to this instance
+  subnet_id     = aws_subnet.private_subnet_1.id
   vpc_security_group_ids = [aws_security_group.my_security_group.id]
 
-  # User data script to bootstrap the instance on startup
   user_data = <<-EOF
               #!/bin/bash
               sudo yum update -y
@@ -313,9 +299,44 @@ resource "aws_instance" "backend_instance" {
               EOF
 
   tags = {
-    Name = "Backend"
+    Name = "Backend AZ 1"
   }
 }
+
+resource "aws_instance" "backend_instance_2" {
+  ami           = "ami-0b4ab8a966e0c2b21"
+  instance_type = "t3.micro"
+  key_name      = "red_project_ssh_key"
+  subnet_id     = aws_subnet.private_subnet_2.id
+  vpc_security_group_ids = [aws_security_group.my_security_group.id]
+
+  user_data = <<-EOF
+              #!/bin/bash
+              sudo yum update -y
+              sudo yum install -y docker
+              sudo service docker start
+              sudo usermod -a -G docker ec2-user
+              sudo docker pull ${var.DOCKER_USERNAME}/${var.BACKEND_IMAGE}
+              sudo docker run -d -p 3001:3001 ${var.DOCKER_USERNAME}/${var.BACKEND_IMAGE}
+              EOF
+
+  tags = {
+    Name = "Backend AZ 2"
+  }
+}
+
+resource "aws_lb_target_group_attachment" "backend_tg_attachment_1" {
+  target_group_arn = aws_lb_target_group.backend_tg.arn
+  target_id        = aws_instance.backend_instance_1.id
+  port             = 3001
+}
+
+resource "aws_lb_target_group_attachment" "backend_tg_attachment_2" {
+  target_group_arn = aws_lb_target_group.backend_tg.arn
+  target_id        = aws_instance.backend_instance_2.id
+  port             = 3001
+}
+
 
 # Application Load Balancer (ELB) for the frontend
 resource "aws_lb" "frontend_elb" {
@@ -324,7 +345,7 @@ resource "aws_lb" "frontend_elb" {
   load_balancer_type = "application"
   security_groups    = [aws_security_group.elb_security_group.id]
   enable_deletion_protection = false
-  subnets            = [aws_subnet.public_subnet.id]
+  subnets            = [aws_subnet.public_subnet_1.id, aws_subnet.public_subnet_2.id]
 
   enable_cross_zone_load_balancing   = true
   idle_timeout                       = 400
@@ -351,28 +372,14 @@ resource "aws_lb_target_group" "frontend_tg" {
   vpc_id   = aws_vpc.main.id
 }
 
-# Associate frontend EC2 instance with the target group
-resource "aws_lb_target_group_attachment" "frontend_tg_attachment" {
-  target_group_arn = aws_lb_target_group.frontend_tg.arn
-  target_id        = aws_instance.frontend.id
-  port             = 3000
-}
-
-
-# Define the EC2 instance for the frontend
-resource "aws_instance" "frontend" {
-  # Specify the Amazon Machine Image ID
-  ami           = "ami-0b4ab8a966e0c2b21"
-  # Define the instance type
-  instance_type = "t3.micro"
-  # Define the SSH key for the instance
-  key_name      = "red_project_ssh_key"
-  # Associate the instance with the public subnet
-  subnet_id     = aws_subnet.public_subnet.id
-  # Assign the custom security group to this instance
+# Define the EC2 instance for the frontend in AZ 1
+resource "aws_instance" "frontend_1" {
+  ami                    = "ami-0b4ab8a966e0c2b21"
+  instance_type          = "t3.micro"
+  key_name               = "red_project_ssh_key"
+  subnet_id              = aws_subnet.public_subnet_1.id
   vpc_security_group_ids = [aws_security_group.my_security_group.id]
 
-  # User data script to bootstrap the instance on startup
   user_data = <<-EOF
               #!/bin/bash
               sudo yum update -y
@@ -385,6 +392,44 @@ resource "aws_instance" "frontend" {
               EOF
 
   tags = {
-    Name = "Frontend"
+    Name = "Frontend-AZ1"
   }
+}
+
+# Define the EC2 instance for the frontend in AZ 2
+resource "aws_instance" "frontend_2" {
+  ami                    = "ami-0b4ab8a966e0c2b21"
+  instance_type          = "t3.micro"
+  key_name               = "red_project_ssh_key"
+  subnet_id              = aws_subnet.public_subnet_2.id
+  vpc_security_group_ids = [aws_security_group.my_security_group.id]
+
+  user_data = <<-EOF
+              #!/bin/bash
+              sudo yum update -y
+              sudo yum install -y docker
+              sudo service docker start
+              sudo usermod -a -G docker ec2-user
+              sudo docker pull ${var.DOCKER_USERNAME}/${var.FRONTEND_IMAGE}
+              BACKEND_URL=http://${aws_lb.backend_lb.dns_name}:3001
+              docker run -d -e BACKEND_URL=$BACKEND_URL -p 3000:3000 ${var.DOCKER_USERNAME}/${var.FRONTEND_IMAGE}
+              EOF
+
+  tags = {
+    Name = "Frontend-AZ2"
+  }
+}
+
+# Associate frontend EC2 instance from AZ 1 with the target group
+resource "aws_lb_target_group_attachment" "frontend_tg_attachment_1" {
+  target_group_arn = aws_lb_target_group.frontend_tg.arn
+  target_id        = aws_instance.frontend_1.id
+  port             = 3000
+}
+
+# Associate frontend EC2 instance from AZ 2 with the target group
+resource "aws_lb_target_group_attachment" "frontend_tg_attachment_2" {
+  target_group_arn = aws_lb_target_group.frontend_tg.arn
+  target_id        = aws_instance.frontend_2.id
+  port             = 3000
 }
