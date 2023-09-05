@@ -202,7 +202,7 @@ resource "aws_instance" "backend_instance" {
               #!/bin/bash
               sudo yum update -y
               sudo yum install -y docker
-              sudo service docker start
+              sudo systemctl start docker
               sudo usermod -a -G docker ec2-user
               sudo docker pull ${var.DOCKER_USERNAME}/${var.BACKEND_IMAGE}
               sudo docker run -d -p 3001:3001 ${var.DOCKER_USERNAME}/${var.BACKEND_IMAGE}
@@ -239,7 +239,7 @@ resource "aws_instance" "frontend" {
               #!/bin/bash
               sudo yum update -y
               sudo yum install -y docker
-              sudo service docker start
+              sudo systemctl start docker
               sudo usermod -a -G docker ec2-user
               sudo docker pull ${var.DOCKER_USERNAME}/${var.FRONTEND_IMAGE}
               BACKEND_IP=${data.aws_instance.backend_instance_data.private_ip}
