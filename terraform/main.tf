@@ -33,14 +33,14 @@ resource "aws_vpc" "main" {
 # Create a public subnet for the frontend
 resource "aws_subnet" "public_subnet" {
   vpc_id     = aws_vpc.main.id
-  cidr_block = "10.0.1.0/24"
+  cidr_block = "10.0.5.0/24"
   map_public_ip_on_launch = true
 }
 
 # Create a private subnet for the backend
 resource "aws_subnet" "private_subnet" {
   vpc_id     = aws_vpc.main.id
-  cidr_block = "10.0.2.0/24"
+  cidr_block = "10.0.6.0/24"
 }
 
 # Create an Elastic IP for the NAT Gateway
