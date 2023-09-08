@@ -187,7 +187,7 @@ resource "aws_security_group_rule" "egress_all" {
 # Define the EC2 instance for the backend
 resource "aws_instance" "backend_instance" {
   # Specify the Amazon Machine Image ID
-  ami           = "ami-065681da47fb4e433"
+  ami           = "ami-0b4ab8a966e0c2b21"
   # Define the instance type
   instance_type = "t3.micro"
   # Define the SSH key for the instance
@@ -201,7 +201,7 @@ resource "aws_instance" "backend_instance" {
   user_data = <<-EOF
               #!/bin/bash
               sudo yum update -y
-              sudo amazon-linux-extras install docker
+              sudo yum install -y docker
               sudo systemctl start docker
               sudo usermod -a -G docker ec2-user
               sudo docker pull ${var.DOCKER_USERNAME}/${var.BACKEND_IMAGE}
@@ -222,7 +222,7 @@ data "aws_instance" "backend_instance_data" {
 # Define the EC2 instance for the frontend
 resource "aws_instance" "frontend" {
   # Specify the Amazon Machine Image ID
-  ami           = "ami-065681da47fb4e433"
+  ami           = "ami-0b4ab8a966e0c2b21"
   # Define the instance type
   instance_type = "t3.micro"
   # Define the SSH key for the instance
@@ -238,7 +238,7 @@ resource "aws_instance" "frontend" {
   user_data = <<-EOF
               #!/bin/bash
               sudo yum update -y
-              sudo amazon-linux-extras install docker
+              sudo yum install -y docker
               sudo systemctl start docker
               sudo usermod -a -G docker ec2-user
               sudo docker pull ${var.DOCKER_USERNAME}/${var.FRONTEND_IMAGE}
