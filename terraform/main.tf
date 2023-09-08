@@ -201,7 +201,7 @@ resource "aws_instance" "backend_instance" {
   user_data = <<-EOF
               #!/bin/bash
               sudo yum update -y
-              sudo yum install -y docker
+              sudo amazon-linux-extras install docker
               sudo systemctl start docker
               sudo usermod -a -G docker ec2-user
               sudo docker pull ${var.DOCKER_USERNAME}/${var.BACKEND_IMAGE}
@@ -238,7 +238,7 @@ resource "aws_instance" "frontend" {
   user_data = <<-EOF
               #!/bin/bash
               sudo yum update -y
-              sudo yum install -y docker
+              sudo amazon-linux-extras install docker
               sudo systemctl start docker
               sudo usermod -a -G docker ec2-user
               sudo docker pull ${var.DOCKER_USERNAME}/${var.FRONTEND_IMAGE}
