@@ -22,8 +22,6 @@ provider "aws" {
   secret_key = var.AWS_SECRET_ACCESS_KEY
 }
 
-
-
 # Create a VPC
 resource "aws_vpc" "main" {
   cidr_block = "10.0.0.0/16"
@@ -203,9 +201,8 @@ resource "aws_instance" "backend_instance" {
   user_data = <<-EOF
               #!/bin/bash
               sudo yum update -y
-              sudo amazon-linux-extras install docker -y
-              sudo systemctl start docker
-              sudo systemctl enable docker
+              sudo yum install docker -y
+              sudo service docker start
               sudo usermod -a -G docker ec2-user
               sudo docker pull ${var.DOCKER_USERNAME}/${var.BACKEND_IMAGE}
               sudo docker run -d -p 3001:3001 ${var.DOCKER_USERNAME}/${var.BACKEND_IMAGE}
@@ -244,9 +241,9 @@ resource "aws_instance" "frontend" {
   user_data = <<-EOF
               #!/bin/bash
               sudo yum update -y
-              sudo amazon-linux-extras install docker -y
-              sudo systemctl start docker
-              sudo systemctl enable docker
+              sudo yum update -y
+              sudo yum install docker -y
+              sudo service docker start
               sudo usermod -a -G docker ec2-user
               sudo docker pull ${var.DOCKER_USERNAME}/${var.FRONTEND_IMAGE}
               BACKEND_IP=${data.aws_instance.backend_instance_data.private_ip}
