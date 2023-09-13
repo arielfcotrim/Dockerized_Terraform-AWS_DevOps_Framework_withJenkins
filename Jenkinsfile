@@ -59,11 +59,11 @@ pipeline {
                 dir('terraform') {
                     sh 'terraform init'
                     withEnv([
-                        "AWS_ACCESS_KEY_ID=${env.AWS_ACCESS_KEY_ID}",
-                        "AWS_SECRET_ACCESS_KEY=${env.AWS_SECRET_ACCESS_KEY}",
-                        "DOCKER_USERNAME=${env.DOCKER_USERNAME}",
-                        "BACKEND_IMAGE=${env.BACKEND_IMAGE}",
-                        "FRONTEND_IMAGE=${env.FRONTEND_IMAGE}"
+                        ${env.AWS_ACCESS_KEY_ID},
+                        ${env.AWS_SECRET_ACCESS_KEY},
+                        ${env.DOCKER_USERNAME},
+                        ${env.BACKEND_IMAGE},
+                        ${env.FRONTEND_IMAGE}
                     ])
                 }
             }
