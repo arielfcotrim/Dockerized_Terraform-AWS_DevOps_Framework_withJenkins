@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 3000
 
 # Run server.js when the container launches
-CMD ["npm", "start"]
+CMD ["npm", "build", "PUBLIC_URL=$(PUBLIC_URL)", "&&", "npm", "start"]

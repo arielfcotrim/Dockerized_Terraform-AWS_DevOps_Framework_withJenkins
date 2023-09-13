@@ -22,6 +22,8 @@ provider "aws" {
   secret_key = var.AWS_SECRET_ACCESS_KEY
 }
 
+
+
 # Create a VPC
 resource "aws_vpc" "main" {
   cidr_block = "10.0.0.0/16"
@@ -211,6 +213,9 @@ resource "aws_instance" "backend_instance" {
 
   tags = {
     Name = "Backend"
+  }
+    provisioner "local-exec" {
+      command = " set PUBLIC_URL=${self.public_ip}"
   }
 }
 
