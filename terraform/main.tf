@@ -1,9 +1,6 @@
 # Variable Definitions
 variable "AWS_ACCESS_KEY_ID" {}
 variable "AWS_SECRET_ACCESS_KEY" {}
-variable "DOCKER_USERNAME" {}
-variable "BACKEND_IMAGE" {}
-variable "FRONTEND_IMAGE" {}
 
 # Set up the required provider and its version for the Terraform configuration
 terraform {
@@ -33,14 +30,14 @@ resource "aws_vpc" "main" {
 # Create a public subnet for the frontend
 resource "aws_subnet" "public_subnet" {
   vpc_id     = aws_vpc.main.id
-  cidr_block = "10.0.5.0/24"
+  cidr_block = "10.0.1.0/24"
   map_public_ip_on_launch = true
 }
 
-# Create a private subnet for the backend
+# Create a private subnet for the backend/server
 resource "aws_subnet" "private_subnet" {
   vpc_id     = aws_vpc.main.id
-  cidr_block = "10.0.6.0/24"
+  cidr_block = "10.0.2.0/24"
 }
 
 # Create an Elastic IP for the NAT Gateway
@@ -140,7 +137,7 @@ resource "aws_security_group_rule" "react" {
   description       = "App access from anywhere"
 }
 
-# Rule to allow Express backend access
+# Rule to allow Express server access
 resource "aws_security_group_rule" "express" {
   type              = "ingress"
   from_port         = 5000
@@ -162,17 +159,6 @@ resource "aws_security_group_rule" "mongodb" {
   description       = "DB access from anywhere"
 }
 
-# Rule to allow internal VPC communication
-resource "aws_security_group_rule" "internal_vpc" {
-  type        = "ingress"
-  from_port   = 0  # can be more specific
-  to_port     = 65535  # can be more specific
-  protocol    = "tcp"
-  self        = true
-  security_group_id = aws_security_group.my_security_group.id
-  description = "Allow internal VPC communication"
-}
-
 # Rule to allow all outbound traffic
 resource "aws_security_group_rule" "egress_all" {
   type              = "egress"
@@ -184,14 +170,14 @@ resource "aws_security_group_rule" "egress_all" {
   description       = "Allow all outbound traffic"
 }
 
-# Define the EC2 instance for the backend
-resource "aws_instance" "backend_instance" {
+# Define the EC2 instance for the server/backend
+resource "aws_instance" "server" {
   # Specify the Amazon Machine Image ID
-  ami           = "ami-0b4ab8a966e0c2b21"
+  ami           = "ami-040d60c831d02d41c"
   # Define the instance type
   instance_type = "t3.micro"
   # Define the SSH key for the instance
-  key_name      = "red_project_ssh_key"
+  key_name = "red_project_ssh_key"
   # Associate the instance with the private subnet
   subnet_id     = aws_subnet.private_subnet.id
   # Assign the custom security group to this instance
@@ -201,51 +187,40 @@ resource "aws_instance" "backend_instance" {
   user_data = <<-EOF
               #!/bin/bash
               sudo yum update -y
-              sudo yum install docker -y
+              sudo yum install -y docker
               sudo service docker start
               sudo usermod -a -G docker ec2-user
-              sudo docker pull ${var.DOCKER_USERNAME}/${var.BACKEND_IMAGE}
-              sudo docker run -d -p 3001:3001 ${var.DOCKER_USERNAME}/${var.BACKEND_IMAGE}
+              sudo docker pull arielforner/red_proj_server:v1
+              sudo docker run -d -p 3001:3001 arielforner/red_proj_server:v1
               EOF
 
   tags = {
-    Name = "Backend"
+    Name = "Server"
   }
-    provisioner "local-exec" {
-      command = " set PUBLIC_URL=${self.public_ip}"
-  }
-}
-
-# Fetch and export attributes of the backend EC2 instance
-data "aws_instance" "backend_instance_data" {
-  depends_on  = [aws_instance.backend_instance]
-  instance_id = aws_instance.backend_instance.id
 }
 
 # Define the EC2 instance for the frontend
 resource "aws_instance" "frontend" {
   # Specify the Amazon Machine Image ID
-  ami           = "ami-0b4ab8a966e0c2b21"
+  ami           = "ami-040d60c831d02d41c"
   # Define the instance type
   instance_type = "t3.micro"
   # Define the SSH key for the instance
-  key_name      = "red_project_ssh_key"
+  key_name = "red_project_ssh_key"
   # Associate the instance with the public subnet
   subnet_id     = aws_subnet.public_subnet.id
   # Assign the custom security group to this instance
   vpc_security_group_ids = [aws_security_group.my_security_group.id]
 
-  # User data script to bootstrap the instance on startup
+  # User data script to bootstrap the instance on startu
   user_data = <<-EOF
               #!/bin/bash
               sudo yum update -y
-              sudo yum update -y
-              sudo yum install docker -y
+              sudo yum install -y docker
               sudo service docker start
               sudo usermod -a -G docker ec2-user
-              sudo docker pull ${var.DOCKER_USERNAME}/${var.FRONTEND_IMAGE}
-              BACKEND_IP=${data.aws_instance.backend_instance_data.private_ip}
-              docker run -d -e BACKEND_URL=http://$BACKEND_IP:3001 -p 3000:3000 ${var.DOCKER_USERNAME}/${var.FRONTEND_IMAGE}
+              sudo docker pull arielforner/red_proj_frontend:v1
+              sudo docker run -d -p 3000:3000 arielforner/red_proj_frontend:v1
               EOF
 
   tags = {
