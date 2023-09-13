@@ -234,8 +234,6 @@ resource "aws_instance" "frontend" {
   subnet_id     = aws_subnet.public_subnet.id
   # Assign the custom security group to this instance
   vpc_security_group_ids = [aws_security_group.my_security_group.id]
-  # Instance depends on the IP Address within the instance
-  depends_on = [data.aws_instance.backend_instance_data]
 
   # User data script to bootstrap the instance on startup
   user_data = <<-EOF
