@@ -2,7 +2,7 @@
 variable "AWS_ACCESS_KEY_ID" {}
 variable "AWS_SECRET_ACCESS_KEY" {}
 variable "DOCKER_USERNAME" {}
-variable "SERVER_IMAGE" {}
+variable "BACKEND_IMAGE" {}
 variable "FRONTEND_IMAGE" {}
 
 # Set up the required provider and its version for the Terraform configuration
@@ -193,8 +193,8 @@ resource "aws_instance" "server" {
               sudo yum install -y docker
               sudo service docker start
               sudo usermod -a -G docker ec2-user
-              sudo docker pull ${var.DOCKER_USERNAME}/${var.SERVER_IMAGE}
-              sudo docker run -d -p 3001:3001 ${var.DOCKER_USERNAME}/${var.SERVER_IMAGE}
+              sudo docker pull ${var.DOCKER_USERNAME}/${var.BACKEND_IMAGE}
+              sudo docker run -d -p 3001:3001 ${var.DOCKER_USERNAME}/${var.BACKEND_IMAGE}
               EOF
 
   tags = {
